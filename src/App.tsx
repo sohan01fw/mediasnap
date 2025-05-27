@@ -1,21 +1,31 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./lib/protectedRoutes";
-import { AuthProvider } from "./lib/supabase/authProvider";
+import { Toaster } from "sonner";
+import { useAuthContext } from "./lib/hooks/useAuth";
 
 function App() {
+  const { user, isLoading } = useAuthContext();
+  if (isLoading) {
+    return;
+  }
   return (
-    <AuthProvider>
+    <>
       <Routes>
-        <Route path="/auth" element={<Auth />} />
+        <Route
+          path="/auth"
+          element={user ? <Navigate to="/" replace /> : <Auth />}
+        />
+
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
         </Route>
       </Routes>
-    </AuthProvider>
+      <Toaster />
+    </>
   );
 }
 

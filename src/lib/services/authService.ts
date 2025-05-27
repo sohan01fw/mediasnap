@@ -3,14 +3,16 @@ import { supabase } from "../supabase/supabaseClient";
 interface Auth {
   email: string;
   password: string;
+  name?: string;
 }
 
-const signUp = async ({ email, password }: Auth) => {
+const signUp = async ({ email, password, name }: Auth) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: import.meta.env.VITE_DEV_SITE_URL,
+      data: { name },
     },
   });
   if (error) {
@@ -35,13 +37,14 @@ const signInWithGoogle = async () => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: import.meta.env.VITE_DEV_SITE_URL, // Replace
+      redirectTo: import.meta.env.VITE_DEV_SITE_URL,
     },
   });
   if (error) {
     console.error("Google sign in error:", error.message);
     throw new Error("Google sign in error");
   }
+  return true;
 };
 
 const getSession = async () => {

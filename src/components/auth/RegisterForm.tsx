@@ -2,13 +2,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import GoogleBtn from "../ui/button";
-import { useSignUp } from "../../lib/hooks/useAuth";
 import { toast } from "sonner";
-import { redirect } from "react-router-dom";
-import { supabase } from "../../lib/supabase/supabaseClient";
+import { signInWithGoogle, signUp } from "../../lib/services/authService";
+import { useMutation } from "@tanstack/react-query";
+import { useToggleStore } from "../../lib/stores/useAuthStore";
 
 const schema = z.object({
-  name: z.string().min(2, "Name required"),
+  name: z.string().optional(),
   email: z.string().email(),
   password: z.string().min(6, "Password must be at least 6 characters"),
   pic: z.string().optional(),
@@ -23,22 +23,25 @@ export default function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterInput>({ resolver: zodResolver(schema) });
 
-  const { mutateAsync: signUp } = useSignUp();
+  const { toggle } = useToggleStore();
+  const mutation = useMutation({ mutationFn: signUp });
+  const googleMutation = useMutation({ mutationFn: signInWithGoogle });
 
   const onSubmit = async (data: RegisterInput) => {
     try {
-      await signUp(data);
-
-      await supabase.from("users").insert({
-        name: data.name,
-        email: data.email,
-      });
-
+      await mutation.mutateAsync(data);
       toast.success("Successfully registered!");
-      redirect("/");
-    } catch (err) {
-      console.error((err as Error).message);
+      toggle();
+    } catch {
       toast.error("error occurred! please try again");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleMutation.mutateAsync();
+    } catch {
+      toast.error("error occurred while login! please try again");
     }
   };
 
@@ -74,14 +77,18 @@ export default function RegisterForm() {
           <p className="text-error text-sm">{errors.password.message}</p>
         )}
 
-        <button type="submit" className="btn btn-primary w-full">
-          Register
+        <button
+          type="submit"
+          className="btn btn-primary w-full"
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? "Loading..." : "Register"}
         </button>
 
         <div className="divider">OR</div>
       </form>
       <div>
-        <GoogleBtn />
+        <GoogleBtn handleGoogleSignIn={handleGoogleSignIn} />
       </div>
     </div>
   );
