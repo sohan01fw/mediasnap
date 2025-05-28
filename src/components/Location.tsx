@@ -41,7 +41,7 @@ export const Map = ({ loc }: { loc: { lat: number; lng: number } }) => {
     <MapContainer
       center={[loc.lat, loc.lng]}
       zoom={13}
-      className="h-64 w-full rounded"
+      className="h-[250px] w-[300px] rounded"
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

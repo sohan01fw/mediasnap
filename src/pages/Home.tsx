@@ -10,8 +10,6 @@ const Home = () => {
   const { setRole } = useUserStore((state) => state);
   const email = user?.email || "";
 
-  //save user to db
-
   const checkUserInDb = async () => {
     try {
       const data = await getUser(email);
