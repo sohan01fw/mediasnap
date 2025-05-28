@@ -67,45 +67,4 @@ const signOut = async () => {
   }
 };
 
-// check in db using suabase query
-
-const checkUser = async (email: string) => {
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("email", email)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Check user error:", error.message);
-    throw new Error("Check user error");
-  }
-
-  return data;
-};
-
-interface UserType {
-  id: string;
-  email: string;
-  name: string;
-  pic?: string;
-}
-//save user to db
-const saveUser = async (user: UserType) => {
-  const { data, error } = await supabase.from("users").insert(user);
-  if (error) {
-    console.error("Save user error:", error.message);
-    throw new Error("Save user error");
-  }
-  return data;
-};
-
-export {
-  signUp,
-  signIn,
-  signInWithGoogle,
-  getSession,
-  signOut,
-  checkUser,
-  saveUser,
-};
+export { signUp, signIn, signInWithGoogle, getSession, signOut };

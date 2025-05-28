@@ -42,7 +42,6 @@ const savePost = async (post: Post) => {
     pic_url,
     vid_url,
   };
-  console.log(postDataSet);
   const { data, error } = await supabase.from("posts").insert(postDataSet);
   if (error) throw error;
   console.log({ data, error });

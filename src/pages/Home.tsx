@@ -1,20 +1,21 @@
 import { useEffect } from "react";
 import { useAuthContext } from "../lib/hooks/useAuth";
-import { checkUser, saveUser } from "../lib/services/authService";
-// import { Video } from "../components/Video";
-// import { Camera } from "../components/Camera";
-// import { Map } from "../components/Map";
 import MediaPost from "../components/MediaPost";
+import Navbar from "../components/Navbar";
+import { getUser, saveUser } from "../lib/services/userService";
+import { useUserStore } from "../lib/stores/useUserStore";
 
 const Home = () => {
   const { user } = useAuthContext();
+  const { setRole } = useUserStore((state) => state);
   const email = user?.email || "";
 
   //save user to db
 
   const checkUserInDb = async () => {
     try {
-      const data = await checkUser(email);
+      const data = await getUser(email);
+      setRole(data?.role || "");
       if (data === null) {
         //save user to db
         const userData = {
@@ -39,6 +40,7 @@ const Home = () => {
 
   return (
     <div>
+      <Navbar />
       <MediaPost avatarUrl={user.user_metadata.avatar_url} />
     </div>
   );
