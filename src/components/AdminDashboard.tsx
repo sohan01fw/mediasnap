@@ -1,111 +1,144 @@
-import React from "react";
-import type { Post } from "../lib/services/mediaService";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { deleteMultiplePosts } from "../lib/services/userService";
+import { toast } from "sonner";
 
-interface DataRow {
+export interface DataRow {
   id: number;
-  avatarUrl: string;
-  name: string;
-  location: string;
-  company: string;
-  position: string;
-  favoriteColor: string;
+  content: string;
+  loc_lat: string;
+  loc_lng: string;
+  pic_url: string;
+  vid_url: string;
+  user: {
+    name: string;
+    pic?: string;
+    role: "ADMIN" | "USER";
+  };
 }
 
-// Mock data
-export const mockData: DataRow[] = [
-  {
-    id: 1,
-    avatarUrl: "https://img.daisyui.com/images/profile/demo/2@94.webp",
-    name: "Hart Hagerty",
-    location: "United States",
-    company: "Zemlak, Daniel and Leannon",
-    position: "Desktop Support Technician",
-    favoriteColor: "Purple",
-  },
-  {
-    id: 2,
-    avatarUrl: "https://img.daisyui.com/images/profile/demo/3@94.webp",
-    name: "Brice Swyre",
-    location: "China",
-    company: "Carroll Group",
-    position: "Tax Accountant",
-    favoriteColor: "Red",
-  },
-  {
-    id: 3,
-    avatarUrl: "https://img.daisyui.com/images/profile/demo/4@94.webp",
-    name: "Marjy Ferencz",
-    location: "Russia",
-    company: "Rowe-Schoen",
-    position: "Office Assistant I",
-    favoriteColor: "Crimson",
-  },
-  {
-    id: 4,
-    avatarUrl: "https://img.daisyui.com/images/profile/demo/5@94.webp",
-    name: "Yancy Tear",
-    location: "Brazil",
-    company: "Wyman-Ledner",
-    position: "Community Outreach Specialist",
-    favoriteColor: "Indigo",
-  },
-];
+export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const allSelected = selectedIds.length === data.length;
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      await deleteMultiplePosts(ids);
+    },
+    onSuccess: () => {
+      console.log("success");
+      queryClient.invalidateQueries({ queryKey: ["allUsersPosts"] });
+      toast.success("Posts deleted successfully");
+    },
+    onError: (error) => {
+      console.log("error", error);
+      toast.error("Error deleting posts");
+    },
+  });
 
-const AdminDashboard = ({ data }: { data: any }) => {
+  const toggleSelectAll = () => {
+    setSelectedIds(allSelected ? [] : data.map((d) => String(d.id)));
+  };
+
+  const toggleSelectOne = (id: number | string) => {
+    const strId = String(id);
+    setSelectedIds((prev) =>
+      prev.includes(strId) ? prev.filter((i) => i !== strId) : [...prev, strId],
+    );
+  };
+
+  const handleDelete = () => {
+    if (selectedIds.length === 0) {
+      toast.error("Please select at least one post");
+      return;
+    }
+    mutation.mutate(selectedIds);
+  };
+
   return (
     <div className="overflow-x-auto">
+      <div className="btn btn-active" onClick={handleDelete}>
+        delete
+      </div>
       <table className="table">
         <thead>
           <tr>
             <th>
-              <label>
-                <input type="checkbox" className="checkbox" />
-              </label>
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={allSelected}
+                onChange={toggleSelectAll}
+              />
             </th>
             <th>Name</th>
-            <th>pic</th>
-            <th>text</th>
-            <th>vid_url</th>
-            <th>pic_url</th>
-            <th>map</th>
+            <th>Text</th>
+            <th>Image</th>
+            <th>Video</th>
+            <th>Map</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((d: any) => (
+          {data.map((d) => (
             <tr key={d.id}>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
               <td>
-                <div className="flex items-center gap-3">
-                  <div className="avatar">
-                    <div className="mask mask-squircle h-12 w-12">
-                      <h3>{d.user.name}</h3>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-bold">{d.name}</div>
-
-                    {/* <div className="text-sm opacity-50">{d.location}</div> */}
-                    <div>
-                      <img src={d.user.pic} alt={`${d.name} avatar`} />
-                    </div>
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={selectedIds.includes(d.id)}
+                  onChange={() => toggleSelectOne(d.id)}
+                />
+              </td>
+              <td className="flex items-center gap-3">
+                <div className="avatar">
+                  <div className="mask rounded-full h-12 w-12">
+                    <img
+                      src={
+                        d.user?.pic ||
+                        "https://placehold.co/100x100?text=Avatar"
+                      }
+                      alt={`${d.user?.name} avatar`}
+                    />
                   </div>
                 </div>
+                <div className="font-bold">{d.user?.name}</div>
+              </td>
+              <td>{d.content}</td>
+              <td>
+                {d.pic_url ? (
+                  <img src={d.pic_url} className="w-20 h-20 object-cover" />
+                ) : (
+                  "-"
+                )}
               </td>
               <td>
-                {/* {row.company} */}
-                <br />
-                <span className="badge badge-ghost badge-sm">
-                  {/* {row.position} */}
-                </span>
+                {d.vid_url ? (
+                  <a
+                    href={d.vid_url}
+                    className="text-blue-600 underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View Video
+                  </a>
+                ) : (
+                  "-"
+                )}
               </td>
-              {/* <td>{row.favoriteColor}</td> */}
-              <th>
-                <button className="btn btn-ghost btn-xs">details</button>
-              </th>
+              <td>
+                {d.loc_lat && d.loc_lng ? (
+                  <a
+                    href={`https://maps.google.com/?q=${d.loc_lat},${d.loc_lng}`}
+                    className="text-blue-600 underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View Map
+                  </a>
+                ) : (
+                  "-"
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -113,5 +146,3 @@ const AdminDashboard = ({ data }: { data: any }) => {
     </div>
   );
 };
-
-export default AdminDashboard;

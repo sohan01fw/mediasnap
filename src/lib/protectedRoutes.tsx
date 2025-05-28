@@ -14,12 +14,14 @@ const ProtectedRouteFromAuth = () => {
 };
 
 const ProtectRouteFromRole = () => {
-  const { role } = useUserStore();
+  const { role } = useUserStore((state) => state);
 
   if (role === "ADMIN") {
     return <Outlet />;
+  } else {
+    return <Navigate to="/" replace />;
   }
-  return <Navigate to="/" replace />;
+  // return <Navigate to="/" replace />;
 };
 
 export { ProtectedRouteFromAuth, ProtectRouteFromRole };

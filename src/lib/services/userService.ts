@@ -44,4 +44,21 @@ const getAllUsersPosts = async () => {
   return data;
 };
 
-export { getUser, saveUser, getAllUsersPosts };
+const deletePost = async (id: string) => {
+  const { data, error } = await supabase.from("posts").delete().eq("id", id);
+  if (error) {
+    console.log(error);
+    throw new Error("Error deleting post");
+  }
+  return data;
+};
+const deleteMultiplePosts = async (ids: string[]) => {
+  const { data, error } = await supabase.from("posts").delete().in("id", ids);
+  if (error) {
+    console.log(error);
+    throw new Error("Error deleting posts");
+  }
+  return data;
+};
+
+export { getUser, saveUser, getAllUsersPosts, deletePost, deleteMultiplePosts };
