@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import { useAuthContext } from "../lib/hooks/useAuth";
 import { checkUser, saveUser } from "../lib/services/authService";
+// import { Video } from "../components/Video";
+// import { Camera } from "../components/Camera";
+// import { Map } from "../components/Map";
+import MediaPost from "../components/MediaPost";
 
 const Home = () => {
   const { user } = useAuthContext();
@@ -35,7 +39,7 @@ const Home = () => {
 
   return (
     <div>
-      <h1>Home</h1>
+      <MediaPost avatarUrl={user.user_metadata.avatar_url} />
     </div>
   );
 };
