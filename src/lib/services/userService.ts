@@ -31,6 +31,24 @@ const saveUser = async (user: UserType) => {
   return data;
 };
 
+//get all posts of user
+
+const getUserPosts = async (id: string) => {
+  if (!id) {
+    throw new Error("User id is required");
+  }
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*, users:user_id(*)")
+    .eq("user_id", id);
+  console.log(data);
+  if (error) {
+    console.log(error);
+    throw new Error("Error fetching posts");
+  }
+
+  return data;
+};
 const getAllUsersPosts = async () => {
   const { data, error } = await supabase
     .from("posts")
@@ -81,4 +99,5 @@ export {
   updateUserRole,
   deletePost,
   deleteMultiplePosts,
+  getUserPosts,
 };

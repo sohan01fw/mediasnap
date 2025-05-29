@@ -93,7 +93,8 @@ export default function MediaPostForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)} // <-- submit the form
-      className="bg-base-100 p-6 rounded-lg shadow-lg space-y-4 flex justify-center  min-h-[80vh]
+      className="bg-base-100 p-6 rounded-lg shadow-lg space-y-4 flex justify-center
+
       "
     >
       <div className=" min-w-[20rem]  ">

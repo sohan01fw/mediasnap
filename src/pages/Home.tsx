@@ -4,6 +4,7 @@ import MediaPost from "../components/MediaPost";
 import Navbar from "../components/Navbar";
 import { getUser, saveUser } from "../lib/services/userService";
 import { useUserStore } from "../lib/stores/useUserStore";
+import { Posts } from "../components/Posts";
 
 const Home = () => {
   const { user } = useAuthContext();
@@ -43,6 +44,7 @@ const Home = () => {
     <div>
       <Navbar />
       <MediaPost />
+      <Posts />
     </div>
   );
 };
