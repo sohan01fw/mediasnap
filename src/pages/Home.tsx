@@ -15,12 +15,14 @@ const Home = () => {
       const data = await getUser(email);
       setRole(data?.role);
       if (!data || data.length === 0) {
+        console.log(data);
         //save user to db
         const userData = {
           id: user?.id || "",
           email: user?.email || "",
           name: user?.user_metadata.name || "",
           pic: user?.user_metadata.avatar_url || "",
+          role: "USER",
         };
         await saveUser(userData);
       }
