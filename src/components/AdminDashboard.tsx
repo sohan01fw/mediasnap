@@ -5,7 +5,6 @@ import {
   updateUserRole,
 } from "../lib/services/userService";
 import { toast } from "sonner";
-import { useAuthContext } from "../lib/hooks/useAuth";
 import { useUserPostsDelStore } from "../lib/stores/useUserStore";
 import { DelBtnForSelectedPosts } from "./ui/button";
 
@@ -25,7 +24,6 @@ export interface DataRow {
 }
 
 export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
-  const { user } = useAuthContext();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const allSelected = selectedIds.length === data.length;
   const queryClient = useQueryClient();
@@ -180,7 +178,6 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
               </td>
               <td>
                 <select
-                  disabled={d.user.id === user?.id}
                   className="select  w-32 max-w-md"
                   defaultValue={d.user.role}
                   onChange={(e) =>
