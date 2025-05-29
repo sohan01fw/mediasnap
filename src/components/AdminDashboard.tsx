@@ -24,6 +24,7 @@ export interface DataRow {
 }
 
 export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
+  console.log(data);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const allSelected = selectedIds.length === data.length;
   const queryClient = useQueryClient();
@@ -178,8 +179,9 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
               </td>
               <td>
                 <select
-                  className="select  w-32 max-w-md"
-                  defaultValue={d.user.role}
+                  className="select w-32 max-w-md"
+                  value={d?.user?.role}
+                  disabled={d?.user?.role === "ADMIN"}
                   onChange={(e) =>
                     changeRole(
                       String(d.user.id),

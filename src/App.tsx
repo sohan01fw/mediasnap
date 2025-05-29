@@ -18,7 +18,6 @@ function App() {
           path="/auth"
           element={user ? <Navigate to="/" replace /> : <Auth />}
         />
-
         <Route element={<ProtectedRouteFromAuth />}>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin />} />

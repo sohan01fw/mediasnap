@@ -34,8 +34,7 @@ const saveUser = async (user: UserType) => {
 const getAllUsersPosts = async () => {
   const { data, error } = await supabase
     .from("posts")
-    .select("*, user:users(*)");
-
+    .select("*, users:user_id(*)");
   if (error) {
     console.log(error);
     throw new Error("Error fetching posts");
