@@ -14,7 +14,7 @@ const Home = () => {
     try {
       const data = await getUser(email);
       setRole(data?.role);
-      if (data === null) {
+      if (!data || data.length === 0) {
         //save user to db
         const userData = {
           id: user?.id || "",
