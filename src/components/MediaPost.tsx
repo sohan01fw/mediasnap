@@ -93,9 +93,10 @@ export default function MediaPostForm({ avatarUrl }: { avatarUrl: string }) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)} // <-- submit the form
-      className="bg-base-100 p-6 rounded-lg shadow-lg space-y-4 flex justify-center  min-h-[80vh]"
+      className="bg-base-100 p-6 rounded-lg shadow-lg space-y-4 flex justify-center  min-h-[80vh]
+      "
     >
-      <div className=" min-w-[20rem] ">
+      <div className=" min-w-[20rem]  ">
         <div className="flex flex-col gap-4  ">
           {/* <img
             src={avatarUrl}
@@ -137,7 +138,7 @@ export default function MediaPostForm({ avatarUrl }: { avatarUrl: string }) {
             </div>
           )}
 
-          <div className="flex justify-between">
+          <div className="flex justify-between  mb-5">
             <div className="btn btn-sm btn-ghost flex items-center space-x-1">
               <MdVideocam className="w-5 h-5 text-red-500" />
               <span>
@@ -146,9 +147,9 @@ export default function MediaPostForm({ avatarUrl }: { avatarUrl: string }) {
             </div>
             <div className="btn btn-sm btn-ghost flex items-center space-x-1">
               <MdPhotoLibrary className="w-5 h-5 text-green-500" />
-              <span>
+              <div className="z-100">
                 <Camera />
-              </span>
+              </div>
             </div>
             <div className="btn btn-sm btn-ghost flex items-center space-x-1">
               <MdLocationPin className="w-5 h-5 text-yellow-500" />
@@ -159,16 +160,8 @@ export default function MediaPostForm({ avatarUrl }: { avatarUrl: string }) {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="btn btn-primary w-full"
-          disabled={mutation.isPending}
-        >
-          {mutation.isPending ? (
-            <progress className="progress progress-info w-full"></progress>
-          ) : (
-            "Post"
-          )}
+        <button type="submit" className="btn btn-primary w-full">
+          Post
         </button>
       </div>
     </form>

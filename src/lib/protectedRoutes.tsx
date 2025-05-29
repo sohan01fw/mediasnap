@@ -1,7 +1,6 @@
 // src/routes/ProtectedRoute.tsx
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthContext } from "./hooks/useAuth";
-import { useUserStore } from "./stores/useUserStore";
 
 const ProtectedRouteFromAuth = () => {
   const { user, isLoading } = useAuthContext();
@@ -13,15 +12,4 @@ const ProtectedRouteFromAuth = () => {
   return <Outlet />;
 };
 
-const ProtectRouteFromRole = () => {
-  const { role } = useUserStore((state) => state);
-
-  if (role === "ADMIN") {
-    return <Outlet />;
-  } else {
-    return <Navigate to="/" replace />;
-  }
-  // return <Navigate to="/" replace />;
-};
-
-export { ProtectedRouteFromAuth, ProtectRouteFromRole };
+export { ProtectedRouteFromAuth };

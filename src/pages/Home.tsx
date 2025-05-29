@@ -13,13 +13,14 @@ const Home = () => {
   const checkUserInDb = async () => {
     try {
       const data = await getUser(email);
-      setRole(data?.role || "");
+      setRole(data?.role);
       if (data === null) {
         //save user to db
         const userData = {
           id: user?.id || "",
           email: user?.email || "",
           name: user?.user_metadata.name || "",
+          pic: user?.user_metadata.avatar_url || "",
         };
         await saveUser(userData);
       }

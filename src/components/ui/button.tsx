@@ -1,3 +1,5 @@
+import { FaTrash } from "react-icons/fa";
+import { useUserPostsDelStore } from "../../lib/stores/useUserStore";
 export default function GoogleBtn({
   handleGoogleSignIn,
 }: {
@@ -11,5 +13,16 @@ export default function GoogleBtn({
       />
       Continue with Google
     </button>
+  );
+}
+
+export function DelBtnForSelectedPosts() {
+  const { delPostsCount } = useUserPostsDelStore();
+  return (
+    <div className="flex items-center gap-2 btn bg-gray-700 m-5  text-white">
+      <FaTrash />
+      <span>Delete</span>
+      <span className="badge badge-neutral">{delPostsCount}</span>
+    </div>
   );
 }

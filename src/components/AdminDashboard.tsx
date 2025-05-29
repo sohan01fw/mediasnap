@@ -1,7 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { deleteMultiplePosts } from "../lib/services/userService";
+import { useEffect, useState } from "react";
+import {
+  deleteMultiplePosts,
+  updateUserRole,
+} from "../lib/services/userService";
 import { toast } from "sonner";
+import { useAuthContext } from "../lib/hooks/useAuth";
+import { useUserPostsDelStore } from "../lib/stores/useUserStore";
+import { DelBtnForSelectedPosts } from "./ui/button";
 
 export interface DataRow {
   id: number;
@@ -11,6 +17,7 @@ export interface DataRow {
   pic_url: string;
   vid_url: string;
   user: {
+    id: string;
     name: string;
     pic?: string;
     role: "ADMIN" | "USER";
@@ -18,9 +25,11 @@ export interface DataRow {
 }
 
 export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
+  const { user } = useAuthContext();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const allSelected = selectedIds.length === data.length;
   const queryClient = useQueryClient();
+  const { setDelPostsCount } = useUserPostsDelStore();
   const mutation = useMutation({
     mutationFn: async (ids: string[]) => {
       await deleteMultiplePosts(ids);
@@ -28,6 +37,8 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
     onSuccess: () => {
       console.log("success");
       queryClient.invalidateQueries({ queryKey: ["allUsersPosts"] });
+      setSelectedIds([]);
+      setDelPostsCount(0);
       toast.success("Posts deleted successfully");
     },
     onError: (error) => {
@@ -47,7 +58,11 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
     );
   };
 
+  useEffect(() => {
+    setDelPostsCount(selectedIds.length);
+  }, [selectedIds]);
   const handleDelete = () => {
+    console.log(selectedIds);
     if (selectedIds.length === 0) {
       toast.error("Please select at least one post");
       return;
@@ -55,16 +70,39 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
     mutation.mutate(selectedIds);
   };
 
+  const roleMutation = useMutation({
+    mutationFn: async ({
+      id,
+      role,
+    }: {
+      id: string;
+      role: "ADMIN" | "USER";
+    }) => {
+      await updateUserRole(id, role);
+    },
+    onSuccess: () => {
+      toast.success("Role updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+    onError: (error) => {
+      console.log("error", error);
+      toast.error("Error updating role");
+    },
+  });
+  const changeRole = (id: string, role: "ADMIN" | "USER") => {
+    roleMutation.mutate({ id, role });
+  };
   return (
     <div className="overflow-x-auto">
       <div className="btn btn-active" onClick={handleDelete}>
-        delete
+        <DelBtnForSelectedPosts />
       </div>
       <table className="table">
         <thead>
           <tr>
             <th>
               <input
+                disabled={data.length === 0}
                 type="checkbox"
                 className="checkbox"
                 checked={allSelected}
@@ -76,6 +114,7 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
             <th>Image</th>
             <th>Video</th>
             <th>Map</th>
+            <th>Role</th>
           </tr>
         </thead>
         <tbody>
@@ -85,7 +124,7 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
                 <input
                   type="checkbox"
                   className="checkbox"
-                  checked={selectedIds.includes(d.id)}
+                  checked={selectedIds.includes(String(d.id))}
                   onChange={() => toggleSelectOne(d.id)}
                 />
               </td>
@@ -138,6 +177,22 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
                 ) : (
                   "-"
                 )}
+              </td>
+              <td>
+                <select
+                  disabled={d.user.id === user?.id}
+                  className="select  w-32 max-w-md"
+                  defaultValue={d.user.role}
+                  onChange={(e) =>
+                    changeRole(
+                      String(d.user.id),
+                      e.target.value as "ADMIN" | "USER",
+                    )
+                  }
+                >
+                  <option value="USER">USER</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
               </td>
             </tr>
           ))}

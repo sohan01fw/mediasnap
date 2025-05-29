@@ -1,8 +1,25 @@
 import { Link } from "react-router-dom";
 import { useUserStore } from "../lib/stores/useUserStore";
+import { supabase } from "../lib/supabase/supabaseClient";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useAuthContext } from "../lib/hooks/useAuth";
 
 export default function Navbar() {
+  const { user } = useAuthContext();
   const { role } = useUserStore();
+  const mutation = useMutation({
+    mutationFn: async () => {
+      await supabase.auth.signOut();
+    },
+    onSuccess: () => {
+      toast.success("Logged out successfully");
+      window.location.reload();
+    },
+  });
+  const handleLogout = async () => {
+    mutation.mutate();
+  };
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="flex-1">
@@ -16,11 +33,8 @@ export default function Navbar() {
             role="button"
             className="btn btn-ghost btn-circle avatar"
           >
-            <div className="w-10 rounded-full">
-              <img
-                alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
+            <div className=" rounded-full">
+              <img src={user?.user_metadata.avatar_url} alt="avatar_url" />
             </div>
           </div>
           <ul
@@ -38,7 +52,7 @@ export default function Navbar() {
                 <Link to="/admin">Admin(dashboard)</Link>
               </li>
             )}
-            <li>
+            <li onClick={handleLogout}>
               <a>Logout</a>
             </li>
           </ul>

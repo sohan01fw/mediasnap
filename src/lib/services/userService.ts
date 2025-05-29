@@ -44,6 +44,20 @@ const getAllUsersPosts = async () => {
   return data;
 };
 
+//update user role
+const updateUserRole = async (id: string, role: "ADMIN" | "USER") => {
+  const { data, error } = await supabase
+    .from("users")
+    .update({ role })
+    .eq("id", id);
+
+  if (error) {
+    console.log(error);
+    throw new Error("Error updating user role");
+  }
+  return data;
+};
+
 const deletePost = async (id: string) => {
   const { data, error } = await supabase.from("posts").delete().eq("id", id);
   if (error) {
@@ -61,4 +75,11 @@ const deleteMultiplePosts = async (ids: string[]) => {
   return data;
 };
 
-export { getUser, saveUser, getAllUsersPosts, deletePost, deleteMultiplePosts };
+export {
+  getUser,
+  saveUser,
+  getAllUsersPosts,
+  updateUserRole,
+  deletePost,
+  deleteMultiplePosts,
+};

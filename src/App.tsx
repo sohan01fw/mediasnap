@@ -4,10 +4,7 @@ import Auth from "./pages/Auth";
 import { Toaster } from "sonner";
 import { useAuthContext } from "./lib/hooks/useAuth";
 import Admin from "./pages/Admin";
-import {
-  ProtectedRouteFromAuth,
-  ProtectRouteFromRole,
-} from "./lib/protectedRoutes";
+import { ProtectedRouteFromAuth } from "./lib/protectedRoutes";
 
 function App() {
   const { user, isLoading } = useAuthContext();
@@ -24,9 +21,8 @@ function App() {
 
         <Route element={<ProtectedRouteFromAuth />}>
           <Route path="/" element={<Home />} />
-          <Route element={<ProtectRouteFromRole />}>
-            <Route path="/admin" element={<Admin />} />
-          </Route>
+
+          <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>
       <Toaster />
