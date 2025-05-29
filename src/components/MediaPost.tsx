@@ -23,7 +23,7 @@ const mediaSchema = z.object({
 
 type MediaFormData = z.infer<typeof mediaSchema>;
 
-export default function MediaPostForm({ avatarUrl }: { avatarUrl: string }) {
+export default function MediaPostForm() {
   const video = useVideoStore((s) => s.video);
   const photo = usePhotoStore((s) => s.photo);
   const location = useLocationStore((s) => s.location);

@@ -40,7 +40,7 @@ const Home = () => {
   return (
     <div>
       <Navbar />
-      <MediaPost avatarUrl={user.user_metadata.avatar_url} />
+      <MediaPost />
     </div>
   );
 };
