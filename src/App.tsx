@@ -23,9 +23,9 @@ function App() {
           <Route path="/" element={<Home />} />
 
           <Route path="/admin" element={<Admin />} />
+          <Toaster />
         </Route>
       </Routes>
-      <Toaster />
     </>
   );
 }
