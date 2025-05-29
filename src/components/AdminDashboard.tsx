@@ -15,7 +15,7 @@ export interface DataRow {
   loc_lng: string;
   pic_url: string;
   vid_url: string;
-  user: {
+  users: {
     id: string;
     name: string;
     pic?: string;
@@ -24,7 +24,6 @@ export interface DataRow {
 }
 
 export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
-  console.log(data);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const allSelected = selectedIds.length === data.length;
   const queryClient = useQueryClient();
@@ -132,14 +131,14 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
                   <div className="mask rounded-full h-12 w-12">
                     <img
                       src={
-                        d.user?.pic ||
+                        d.users?.pic ||
                         "https://placehold.co/100x100?text=Avatar"
                       }
-                      alt={`${d.user?.name} avatar`}
+                      alt={`${d.users?.name} avatar`}
                     />
                   </div>
                 </div>
-                <div className="font-bold">{d.user?.name}</div>
+                <div className="font-bold">{d.users?.name}</div>
               </td>
               <td>{d.content}</td>
               <td>
@@ -180,11 +179,11 @@ export const AdminDashboard = ({ data }: { data: DataRow[] }) => {
               <td>
                 <select
                   className="select w-32 max-w-md"
-                  value={d?.user?.role}
-                  disabled={d?.user?.role === "ADMIN"}
+                  defaultValue={d?.users?.role}
+                  disabled={d?.users?.role === "ADMIN"}
                   onChange={(e) =>
                     changeRole(
-                      String(d.user.id),
+                      String(d.users.id),
                       e.target.value as "ADMIN" | "USER",
                     )
                   }
